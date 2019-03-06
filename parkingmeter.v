@@ -119,7 +119,10 @@ endmodule
 
 
 //divides clock to 1hz
-module clkdiv1s(input clk, output reg clk_out);
+module clkdiv1s(
+    input clk, 
+    output reg clk_out
+    );
 
     reg [26:0] COUNT;
    
@@ -132,10 +135,13 @@ module clkdiv1s(input clk, output reg clk_out);
        
     else COUNT = COUNT + 1;
     end
- endmodulde
+endmodule
 
 //divides clock to 4 hz for debouncing
-module clkdiv4hz(input clk, output reg clk_out);
+module clkdiv4hz(
+    input clk, 
+    output reg clk_out
+    );
 
     reg [26:0] COUNT;
    
@@ -148,7 +154,7 @@ module clkdiv4hz(input clk, output reg clk_out);
        
     else COUNT = COUNT + 1;
     end
-endmodulde
+endmodule
 
 
 //converts binary number to 4 seperate digits
@@ -194,10 +200,9 @@ endmodule
 
 //rotates 4 digits on 4 seven segment displays
 module displayLogic(
-    input clk, dpin,
+    input clk,
     input [6:0] sseg0, sseg1, sseg2, sseg3,
     output reg an0, an1, an2, an3, 
-    output dpout,
     output reg [6:0] sseg
     );
     reg [1:0] state, next_state;
@@ -206,8 +211,6 @@ module displayLogic(
         state = 2'b00;
         counter = 0;
     end 
-    
-    assign dpout = dpin | an1;
     
     always@(*) begin
     case(state)
@@ -230,7 +233,8 @@ endmodule
 
 //mask allows for digits to flash as they are counting down
 module mask(
-    input counter, an0, an1, an2, an3, clk1s,
+    input [13:0] counter, 
+    input an0, an1, an2, an3, clk1s,
     output reg [3:0] anout
     );
     
