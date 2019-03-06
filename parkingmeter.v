@@ -119,18 +119,36 @@ endmodule
 
 
 //divides clock to 1hz
-module clkdiv1s(
-    input clk,
-    output clkout
-    );
-endmodule
+module clkdiv1s(input clk, output reg clk_out);
+
+    reg [26:0] COUNT;
+   
+    always @(posedge clk)
+    begin
+        if (COUNT == 10000000) begin
+        clk_out = ~clk_out;
+        COUNT = 0;
+        end
+       
+    else COUNT = COUNT + 1;
+    end
+ endmodulde
 
 //divides clock to 4 hz for debouncing
-module clkdiv4hz(
-    input clk,
-    output clkout
-    );
-endmodule
+module clkdiv4hz(input clk, output reg clk_out);
+
+    reg [26:0] COUNT;
+   
+    always @(posedge clk)
+    begin
+        if (COUNT == 2500000) begin
+        clk_out = ~clk_out;
+        COUNT = 0;
+        end
+       
+    else COUNT = COUNT + 1;
+    end
+endmodulde
 
 
 //converts binary number to 4 seperate digits
