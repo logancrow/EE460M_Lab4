@@ -28,11 +28,12 @@ module parkingmeter(
     
     wire [13:0] seconds;
     
-    wire clk1s;
+    wire clk1s, clk_debounce;
     
     clkdiv1s c0 (clk,clk1s);
+    clkdiv4hz c1 (clk,clk_debounce);
     
-    counter c1 (plus10,plus180,plus200,plus550,reset10,reset205,clk,clk1s,seconds);
+    counter c2 (plus10,plus180,plus200,plus550,reset10,reset205,clk_debounce,clk1s,seconds);
     
     wire [3:0] dig3,dig2,dig1,dig0;
     
@@ -60,110 +61,55 @@ module counter(
     output reg [13:0] seconds
     );
     
-    reg [2:0] state, next_state;
-    reg [13:0] state_out, holdmux, out;
+    reg [1:0] state, next_state;
+    reg [13:0] state_out, out;
         
     always@(*) begin 
         case(state)
-        3'b000 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b100000 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b010000 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'b001000 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'b000100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'b00001X : begin next_state = 3'b101; state_out = 10; end
-                 6'b000001 : begin next_state = 3'b110; state_out = 205; end 
-                 endcase
-        3'b001 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b100000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'bX10000 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'bX01000 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'bX00100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'bX0001X : begin next_state = 3'b101; state_out = 10; end
-                 6'bX00001 : begin next_state = 3'b110; state_out = 205; end 
-                 endcase
-        3'b010 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b1X0000 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b010000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b0X1000 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'b0X0100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'b0X001X : begin next_state = 3'b101; state_out = 10; end
-                 6'b0X0001 : begin next_state = 3'b110; state_out = 205; end 
-                 endcase
-        3'b011 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b10X000 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b01X000 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'b001000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b00X100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'b00X01X : begin next_state = 3'b101; state_out = 10; end
-                 6'b00X001 : begin next_state = 3'b110; state_out = 205; end 
-                 endcase
-        3'b100 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b100X00 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b010X00 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'b001X00 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'b000100 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b000X1X : begin next_state = 3'b101; state_out = 10; end
-                 6'b000X01 : begin next_state = 3'b110; state_out = 205; end 
-                 endcase
-        3'b101 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b100000 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b010000 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'b001000 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'b000100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'b00001X : begin next_state = 3'b101; state_out = 10; end
-                 6'b000001 : begin next_state = 3'b110; state_out = 205; end
-                 6'b100010 : begin next_state = 3'b111; state_out = seconds + 10; end
-                 6'b010010 : begin next_state = 3'b111; state_out = seconds + 180; end
-                 6'b001010 : begin next_state = 3'b111; state_out = seconds + 200; end
-                 6'b000110 : begin next_state = 3'b111; state_out = seconds + 550; end 
-                 endcase
-        3'b110 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b100000 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b010000 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'b001000 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'b000100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'b00001X : begin next_state = 3'b101; state_out = 10; end
-                 6'b000001 : begin next_state = 3'b110; state_out = 205; end
-                 6'b100001 : begin next_state = 3'b111; state_out = seconds + 10; end
-                 6'b010001 : begin next_state = 3'b111; state_out = seconds + 180; end
-                 6'b001001 : begin next_state = 3'b111; state_out = seconds + 200; end
-                 6'b000101 : begin next_state = 3'b111; state_out = seconds + 550; end 
-                 endcase
-        3'b111 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                 6'b000000 : begin next_state = 3'b000; state_out = seconds; end
-                 6'b100000 : begin next_state = 3'b001; state_out = seconds + 10; end
-                 6'b010000 : begin next_state = 3'b010; state_out = seconds + 180; end
-                 6'b001000 : begin next_state = 3'b011; state_out = seconds + 200; end
-                 6'b000100 : begin next_state = 3'b100; state_out = seconds + 550; end
-                 6'b00001X : begin next_state = 3'b101; state_out = seconds; end
-                 6'b000001 : begin next_state = 3'b110; state_out = seconds; end
-                 6'b10001X : begin next_state = 3'b111; state_out = seconds; end
-                 6'b01001X : begin next_state = 3'b111; state_out = seconds; end
-                 6'b00101X : begin next_state = 3'b111; state_out = seconds; end
-                 6'b00011X : begin next_state = 3'b111; state_out = seconds; end 
-                 6'b1000X1 : begin next_state = 3'b111; state_out = seconds; end
-                 6'b0100X1 : begin next_state = 3'b111; state_out = seconds; end
-                 6'b0010X1 : begin next_state = 3'b111; state_out = seconds; end
-                 6'b0001X1 : begin next_state = 3'b111; state_out = seconds; end
-                 endcase
+        2'b00 : case({plus10,plus180,plus200,plus550,reset10,reset205})
+                6'b000000 : begin next_state = 2'b00; state_out = seconds; end
+                6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
+                6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
+                6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
+                6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
+                6'b00001X : begin next_state = 2'b01; state_out = 10; end
+                6'b000001 : begin next_state = 2'b10; state_out = 205; end 
+                endcase
+        2'b01 : case({plus10,plus180,plus200,plus550,reset10,reset205})
+                6'b000000 : begin next_state = 2'b00; state_out = seconds; end
+                6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
+                6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
+                6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
+                6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
+                6'b10001X : begin next_state = 2'b01; state_out = seconds + 10; end
+                6'b01001X : begin next_state = 2'b01; state_out = seconds + 180; end
+                6'b00101X : begin next_state = 2'b01; state_out = seconds + 200; end
+                6'b00011X : begin next_state = 2'b01; state_out = seconds + 550; end
+                6'b00001X : begin next_state = 2'b01; state_out = seconds; end
+                6'b000001 : begin next_state = 2'b10; state_out = 205; end 
+                endcase
+        2'b10 : case({plus10,plus180,plus200,plus550,reset10,reset205})
+                6'b000000 : begin next_state = 2'b00; state_out = seconds; end
+                6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
+                6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
+                6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
+                6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
+                6'b100001 : begin next_state = 2'b10; state_out = seconds + 10; end
+                6'b010001 : begin next_state = 2'b10; state_out = seconds + 180; end
+                6'b001001 : begin next_state = 2'b10; state_out = seconds + 200; end
+                6'b000101 : begin next_state = 2'b10; state_out = seconds + 550; end
+                6'b00001X : begin next_state = 2'b01; state_out = 10; end
+                6'b000001 : begin next_state = 2'b10; state_out = seconds; end 
+                endcase
         endcase
     end
     
     always@(posedge clk) state <= next_state;
     
-    always@(*) begin
-    if(reset10 | reset205 | (seconds == 0)) holdmux <= state_out;
-    else holdmux <= state_out - 1;
+    always@(posedge clk1s) begin 
+        if(reset10 | reset205 | (seconds == 0)) out <= state_out;
+            else out <= state_out - 1;
     end
-    
-    always@(posedge clk1s) out <= holdmux;
     
     always@(*) begin
     if(seconds >= 9999) seconds <= 9999;
@@ -174,6 +120,13 @@ endmodule
 
 //divides clock to 1hz
 module clkdiv1s(
+    input clk,
+    output clkout
+    );
+endmodule
+
+//divides clock to 4 hz for debouncing
+module clkdiv4hz(
     input clk,
     output clkout
     );
@@ -223,15 +176,20 @@ endmodule
 
 //rotates 4 digits on 4 seven segment displays
 module displayLogic(
-    input clk,
+    input clk, dpin,
     input [6:0] sseg0, sseg1, sseg2, sseg3,
     output reg an0, an1, an2, an3, 
+    output dpout,
     output reg [6:0] sseg
     );
     reg [1:0] state, next_state;
+    reg [9:0] counter;
     initial begin
         state = 2'b00;
+        counter = 0;
     end 
+    
+    assign dpout = dpin | an1;
     
     always@(*) begin
     case(state)
@@ -242,10 +200,14 @@ module displayLogic(
         endcase
     end
     
-    always@(posedge clk) begin
+    always@(posedge clk) begin        
+        if(counter == 999) begin
         state <= next_state;
+        counter <= 0;
+        end else counter <= counter + 1;
         end              
 endmodule
+
 
 
 //mask allows for digits to flash as they are counting down
