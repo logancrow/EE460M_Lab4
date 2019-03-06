@@ -63,46 +63,51 @@ module counter(
     
     reg [1:0] state, next_state;
     reg [13:0] state_out, out;
+    
+    initial begin
+    state = 0;
+    next_state = 0;
+    end
         
     always@(*) begin 
-        case(state)
-        2'b00 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                6'b000000 : begin next_state = 2'b00; state_out = seconds; end
-                6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
-                6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
-                6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
-                6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
-                6'b00001X : begin next_state = 2'b01; state_out = 10; end
-                6'b000001 : begin next_state = 2'b10; state_out = 205; end 
-                endcase
-        2'b01 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                6'b000000 : begin next_state = 2'b00; state_out = seconds; end
-                6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
-                6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
-                6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
-                6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
-                6'b10001X : begin next_state = 2'b01; state_out = seconds + 10; end
-                6'b01001X : begin next_state = 2'b01; state_out = seconds + 180; end
-                6'b00101X : begin next_state = 2'b01; state_out = seconds + 200; end
-                6'b00011X : begin next_state = 2'b01; state_out = seconds + 550; end
-                6'b00001X : begin next_state = 2'b01; state_out = seconds; end
-                6'b000001 : begin next_state = 2'b10; state_out = 205; end 
-                endcase
-        2'b10 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                6'b000000 : begin next_state = 2'b00; state_out = seconds; end
-                6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
-                6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
-                6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
-                6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
-                6'b100001 : begin next_state = 2'b10; state_out = seconds + 10; end
-                6'b010001 : begin next_state = 2'b10; state_out = seconds + 180; end
-                6'b001001 : begin next_state = 2'b10; state_out = seconds + 200; end
-                6'b000101 : begin next_state = 2'b10; state_out = seconds + 550; end
-                6'b00001X : begin next_state = 2'b01; state_out = 10; end
-                6'b000001 : begin next_state = 2'b10; state_out = seconds; end 
-                endcase
-        endcase
-    end
+            case(state)
+            2'b00 : case({plus10,plus180,plus200,plus550,reset10,reset205})
+                    6'b000000 : begin next_state = 2'b00; state_out = seconds; end
+                    6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
+                    6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
+                    6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
+                    6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
+                    6'b00001X : begin next_state = 2'b01; state_out = 10; end
+                    6'b000001 : begin next_state = 2'b10; state_out = 205; end 
+                    endcase
+            2'b01 : case({plus10,plus180,plus200,plus550,reset10,reset205})
+                    6'b000000 : begin next_state = 2'b00; state_out = seconds; end
+                    6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
+                    6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
+                    6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
+                    6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
+                    6'b10001X : begin next_state = 2'b01; state_out = seconds + 10; end
+                    6'b01001X : begin next_state = 2'b01; state_out = seconds + 180; end
+                    6'b00101X : begin next_state = 2'b01; state_out = seconds + 200; end
+                    6'b00011X : begin next_state = 2'b01; state_out = seconds + 550; end
+                    6'b00001X : begin next_state = 2'b01; state_out = seconds; end
+                    6'b000001 : begin next_state = 2'b10; state_out = 205; end 
+                    endcase
+            2'b10 : case({plus10,plus180,plus200,plus550,reset10,reset205})
+                    6'b000000 : begin next_state = 2'b00; state_out = seconds; end
+                    6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
+                    6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
+                    6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
+                    6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
+                    6'b100001 : begin next_state = 2'b10; state_out = seconds + 10; end
+                    6'b010001 : begin next_state = 2'b10; state_out = seconds + 180; end
+                    6'b001001 : begin next_state = 2'b10; state_out = seconds + 200; end
+                    6'b000101 : begin next_state = 2'b10; state_out = seconds + 550; end
+                    6'b00001X : begin next_state = 2'b01; state_out = 10; end
+                    6'b000001 : begin next_state = 2'b10; state_out = seconds; end 
+                    endcase
+            endcase
+        end
     
     always@(posedge clk) state <= next_state;
     
@@ -125,6 +130,10 @@ module clkdiv1s(
     );
 
     reg [26:0] COUNT;
+    
+    initial begin
+    COUNT = 0;
+    end
    
     always @(posedge clk)
     begin
@@ -144,6 +153,10 @@ module clkdiv4hz(
     );
 
     reg [26:0] COUNT;
+    
+    initial begin
+    COUNT = 0;
+    end
    
     always @(posedge clk)
     begin
