@@ -62,54 +62,67 @@ module counter(
     );
     
     reg [1:0] state, next_state;
-    reg [13:0] state_out, out;
+    reg [13:0] state_out, out, state_out1;
     
     initial begin
     state = 0;
     next_state = 0;
+    state_out = 0;
+    state_out1 = 0;
+    out = 0;
     end
         
     always@(*) begin 
             case(state)
-            2'b00 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                    6'b000000 : begin next_state = 2'b00; state_out = seconds; end
-                    6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
-                    6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
-                    6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
-                    6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
-                    6'b00001X : begin next_state = 2'b01; state_out = 10; end
-                    6'b000001 : begin next_state = 2'b10; state_out = 205; end 
+            2'b00 : case({reset10,reset205})
+                    2'b00: begin next_state = 2'b00; 
+                                if(plus10) state_out1 = state_out + 10; 
+                                    else if(plus180) state_out1 = state_out + 180; 
+                                        else if(plus200) state_out1 = state_out + 200; 
+                                            else if(plus550) state_out1 = state_out + 550; end                                                
+                    2'b01: begin next_state = 2'b01; state_out1 = 205; end
+                    2'b10: begin next_state = 2'b10; state_out1 = 10; end
+                    2'b11: begin next_state = 2'b10; state_out1 = 10; end
                     endcase
-            2'b01 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                    6'b000000 : begin next_state = 2'b00; state_out = seconds; end
-                    6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
-                    6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
-                    6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
-                    6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
-                    6'b10001X : begin next_state = 2'b01; state_out = seconds + 10; end
-                    6'b01001X : begin next_state = 2'b01; state_out = seconds + 180; end
-                    6'b00101X : begin next_state = 2'b01; state_out = seconds + 200; end
-                    6'b00011X : begin next_state = 2'b01; state_out = seconds + 550; end
-                    6'b00001X : begin next_state = 2'b01; state_out = seconds; end
-                    6'b000001 : begin next_state = 2'b10; state_out = 205; end 
+            2'b01 : case({reset10,reset205})                    
+                    2'b00: begin next_state = 2'b00; 
+                            if(plus10) state_out1 = state_out + 10; 
+                                else if(plus180) state_out1 = state_out + 180; 
+                                    else if(plus200) state_out1 = state_out + 200; 
+                                        else if(plus550) state_out1 = state_out + 550; end
+                    2'b01: begin next_state = 2'b01; 
+                            if(plus10) state_out1 = state_out + 10; 
+                                else if(plus180) state_out1 = state_out + 180; 
+                                    else if(plus200) state_out1 = state_out + 200; 
+                                        else if(plus550) state_out1 = state_out + 550; end
+                    2'b10: begin next_state = 2'b10; state_out1 = 10; end
+                    2'b11: begin next_state = 2'b10; state_out1 = 10; end 
                     endcase
-            2'b10 : case({plus10,plus180,plus200,plus550,reset10,reset205})
-                    6'b000000 : begin next_state = 2'b00; state_out = seconds; end
-                    6'b100000 : begin next_state = 2'b00; state_out = seconds + 10; end
-                    6'b010000 : begin next_state = 2'b00; state_out = seconds + 180; end
-                    6'b001000 : begin next_state = 2'b00; state_out = seconds + 200; end
-                    6'b000100 : begin next_state = 2'b00; state_out = seconds + 550; end
-                    6'b100001 : begin next_state = 2'b10; state_out = seconds + 10; end
-                    6'b010001 : begin next_state = 2'b10; state_out = seconds + 180; end
-                    6'b001001 : begin next_state = 2'b10; state_out = seconds + 200; end
-                    6'b000101 : begin next_state = 2'b10; state_out = seconds + 550; end
-                    6'b00001X : begin next_state = 2'b01; state_out = 10; end
-                    6'b000001 : begin next_state = 2'b10; state_out = seconds; end 
+            2'b10 : case({reset10,reset205})
+                    2'b00: begin next_state = 2'b00; 
+                        if(plus10) state_out1 = state_out + 10; 
+                            else if(plus180) state_out1 = state_out + 180; 
+                                else if(plus200) state_out1 = state_out + 200; 
+                                    else if(plus550) state_out1 = state_out + 550; end
+                    2'b01: begin next_state = 2'b01; state_out1 = 205; end
+                    2'b10: begin next_state = 2'b10; 
+                            if(plus10) state_out1 = state_out + 10; 
+                                else if(plus180) state_out1 = state_out + 180; 
+                                    else if(plus200) state_out1 = state_out + 200; 
+                                        else if(plus550) state_out1 = state_out + 550; end
+                    2'b11: begin next_state = 2'b10; 
+                            if(plus10) state_out1 = state_out + 10; 
+                                else if(plus180) state_out1 = state_out + 180; 
+                                    else if(plus200) state_out1 = state_out + 200; 
+                                        else if(plus550) state_out1 = state_out + 550; end
                     endcase
             endcase
         end
     
-    always@(posedge clk) state <= next_state;
+    always@(posedge clk) begin 
+        state_out <= state_out1;
+        state <= next_state; 
+    end
     
     always@(posedge clk1s) begin 
         if(reset10 | reset205 | (seconds == 0)) out <= state_out;
@@ -120,6 +133,7 @@ module counter(
     if(seconds >= 9999) seconds <= 9999;
     else seconds <= out;
     end
+    
 endmodule
 
 
